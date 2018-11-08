@@ -1,0 +1,106 @@
+define
+name sub attribute datatype string;
+dfname sub attribute datatype string;
+dateModified sub attribute datatype date;
+version sub attribute datatype long;
+pipelineStep sub entity
+    has version
+    has dateModified
+    plays defined-in;
+    
+domainConcept sub entity
+    has name
+    plays reflected-concept;
+    
+graphPart sub entity
+    has name
+    plays property-owned
+    plays reflects-concept;
+    
+graphObject sub entity
+    plays property-owner
+    plays reflects-concept;
+graphAttribute sub graphPart
+    has name
+    plays attribute-owned
+    plays reflects-concept;
+    
+graphVertexID sub graphPart
+    has name 
+    has dfname #Default is "id"
+    plays vertexid-owned
+    plays reflects-concept;
+    
+graphType sub graphPart
+    has name 
+    has dfname #Default is "typ"
+    plays type-owned
+    plays reflects-concept;
+    
+graphEdgeEndID sub graphPart
+    has name 
+    has dfname #Default is "src" or "dst" depending on role
+    plays src-edgeid-owned
+    plays dst-edgeid-owned
+    plays reflects-concept;
+# represent this case as an inferred relationship with roles src, dst and parentEdge    case g: graphEdgeIds => "src,dst"
+graphVertex sub graphObject
+    has name
+    plays reflects-concept
+    plays vertexid-owner
+    plays attribute-owner
+    plays type-owner
+    plays src-vertex-owned
+    plays dst-vertex-owned;
+    
+graphEdge sub graphObject
+    has name
+    plays reflects-concept
+    plays attribute-owner
+    plays type-owner
+    plays edgeid-owner
+    plays edge-owned;
+graphTriplet sub graphObject
+    has name
+    plays reflects-concept
+    plays object-owner;
+    
+reflects-concept sub role; reflected-concept sub role;
+has-concept sub relationship
+    relates reflects-concept
+    relates reflected-concept
+    relates defined-in;
+    
+property-owner sub role; property-owned sub role;
+has_property sub relationship
+        relates property-owner
+        relates property-owned
+        relates defined-in;
+        
+has-attribute sub has_property
+    relates attribute-owner as property-owner
+    relates attribute-owned as property-owned
+    relates defined-in;
+has-type sub has_property
+    relates type-owner as property-owner
+    relates type-owned as property-owned
+    relates defined-in;
+    
+has-vertexid sub has_property
+    relates vertexid-owner as property-owner
+    relates vertexid-owned as property-owned
+    relates defined-in;
+#simple example of n-ary relationship (not supported in Neo)
+has-edgeids sub has_property
+    relates edgeid-owner as property-owner
+    relates src-edgeid-owned as property-owned
+    relates dst-edgeid-owned as property-owned
+    relates defined-in;
+    
+#another n-ary relationship of parent triplet to src and dst nodes and edge
+has-graphobjects sub has_property
+    relates object-owner as property-owner
+    relates src-vertex-owned as property-owned
+    relates dst-vertex-owned as property-owned
+    relates edge-owned as property-owned
+    relates defined-in;
